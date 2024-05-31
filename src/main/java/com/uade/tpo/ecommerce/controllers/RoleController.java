@@ -11,7 +11,7 @@ import com.uade.tpo.ecommerce.entity.Role;
 import com.uade.tpo.ecommerce.service.RoleService;
 
 @RestController
-@RequestMapping("roles")
+@RequestMapping("roles ")
 public class RoleController {
 
   @Autowired

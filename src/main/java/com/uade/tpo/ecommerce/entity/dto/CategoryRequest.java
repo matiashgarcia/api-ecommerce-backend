@@ -8,4 +8,5 @@ public class CategoryRequest {
   private String icon;
   private String image_url;
   private String title;
+
 }
