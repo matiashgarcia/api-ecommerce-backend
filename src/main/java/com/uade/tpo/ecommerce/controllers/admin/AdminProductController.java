@@ -2,12 +2,12 @@ package com.uade.tpo.ecommerce.controllers.admin;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,55 +22,59 @@ import com.uade.tpo.ecommerce.entity.Product;
 import com.uade.tpo.ecommerce.entity.dto.ProductRequest;
 import com.uade.tpo.ecommerce.entity.dto.ProductResponse;
 import com.uade.tpo.ecommerce.exceptions.ProductNotFoundException;
-import com.uade.tpo.ecommerce.service.IProductService;
-import com.uade.tpo.ecommerce.service.ProductService;
+import com.uade.tpo.ecommerce.service.admin.AdminProductService;
+import com.uade.tpo.ecommerce.service.admin.IAdminProductService;
 
 @RestController
+@CrossOrigin
 @RequestMapping("admin/products")
 public class AdminProductController {
 
   @Autowired
-  private IProductService service;
+  private IAdminProductService service;
 
   @GetMapping
   public ResponseEntity<List<ProductResponse>> getAll(
       @RequestParam(required = false) Integer page,
       @RequestParam(required = false) Integer size) {
 
-    final Integer pageParsed = page == null || size == null ? 0 : page;
-    final Integer sizeParsed = page == null || size == null ? Integer.MAX_VALUE : size;
-    final Page<Product> pagedResult = service.getAll(PageRequest.of(pageParsed, sizeParsed));
-
-    final List<ProductResponse> listResult = pagedResult.getContent().stream()
-        .map(a -> ProductService.productResponseBuilder(a))
+    Integer pageParsed = page == null || size == null ? 0 : page;
+    Integer sizeParsed = page == null || size == null ? Integer.MAX_VALUE : size;
+    Page<Product> pagedResult = service.getAll(PageRequest.of(pageParsed, sizeParsed));
+    List<ProductResponse> listResult = pagedResult.getContent().stream()
+        .map(a -> AdminProductService.productResponseBuilder(a))
         .toList();
     return ResponseEntity.ok(listResult);
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<ProductResponse> getById(@PathVariable Long id) {
-    Optional<Product> result = service.getById(id);
-    if (result.isPresent())
-      return ResponseEntity.ok(ProductService.productResponseBuilder(result.get()));
-    return ResponseEntity.noContent().build();
-  }
-
   @PostMapping
   public ResponseEntity<Object> create(@RequestBody ProductRequest request) {
-    Product result = service.create(request);
-    return ResponseEntity.created(URI.create("/products/" + result.getId())).body(result);
+    try {
+      Product result = service.create(request);
+      return ResponseEntity.created(URI.create("/admin/products/" + result.getId())).body(result);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().build();
+    }
   }
 
   @PutMapping
   public ResponseEntity<Object> update(@RequestBody ProductRequest request)
       throws ProductNotFoundException {
-    Product result = service.update(request);
-    return ResponseEntity.created(URI.create("/products/" + result.getId())).body(result);
+    try {
+      Product result = service.update(request);
+      return ResponseEntity.created(URI.create("/admin/products/" + result.getId())).body(result);
+    } catch (ProductNotFoundException e) {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Object> delete(@PathVariable Long id) throws ProductNotFoundException {
-    service.delete(id);
-    return ResponseEntity.ok().build();
+    try {
+      service.delete(id);
+      return ResponseEntity.ok().build();
+    } catch (ProductNotFoundException e) {
+      return ResponseEntity.notFound().build();
+    }
   }
 }

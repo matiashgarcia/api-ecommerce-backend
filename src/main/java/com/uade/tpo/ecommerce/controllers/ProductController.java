@@ -23,10 +23,22 @@ public class ProductController {
   @Autowired
   private IProductService service;
 
+  @GetMapping("/{id}")
+  public ResponseEntity<ProductResponse> getById(@PathVariable Long id) {
+    Optional<Product> result = service.getById(id);
+    if (result.isPresent())
+      return ResponseEntity.ok(ProductService.productResponseBuilder(result.get()));
+    return ResponseEntity.noContent().build();
+  }
+
   @GetMapping("/categoryid/{id}")
   public ResponseEntity<List<ProductResponse>> getProductsByCategoryId(@PathVariable String id) {
     List<ProductResponse> listResult = service.getByCategoryId(id).stream()
-        .map(a -> ProductService.productResponseBuilder(a))
+        .map(a -> {
+          ProductResponse p = ProductService.productResponseBuilder(a);
+          p.setDescription(null);
+          return p;
+        })
         .toList();
     return ResponseEntity.ok(listResult);
   }
@@ -34,16 +46,25 @@ public class ProductController {
   @GetMapping("/search")
   public ResponseEntity<List<ProductResponse>> getProductsByTitle(@RequestParam(required = true) String search) {
     List<ProductResponse> listResult = service.getAllBySearch(search).stream()
-        .map(a -> ProductService.productResponseBuilder(a))
+        .map(a -> {
+          ProductResponse p = ProductService.productResponseBuilder(a);
+          p.setDescription(null);
+          return p;
+        })
         .toList();
     return ResponseEntity.ok(listResult);
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<ProductResponse> getById(@PathVariable Long id) {
-    Optional<Product> result = service.getById(id);
-    if (result.isPresent())
-      return ResponseEntity.ok(ProductService.productResponseBuilder(result.get()));
-    return ResponseEntity.noContent().build();
+  @GetMapping("/cart-products")
+  public ResponseEntity<List<ProductResponse>> getCartProducts(@RequestParam(required = true) String productIds) {
+    List<Product> productList = service.getCartProducts(productIds.split(","));
+    List<ProductResponse> listResult = productList.stream()
+        .map(a -> {
+          ProductResponse p = ProductService.productResponseBuilder(a);
+          p.setDescription(null);
+          return p;
+        })
+        .toList();
+    return ResponseEntity.ok(listResult);
   }
 }

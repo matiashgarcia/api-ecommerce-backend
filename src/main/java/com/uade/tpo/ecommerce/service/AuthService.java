@@ -2,6 +2,8 @@ package com.uade.tpo.ecommerce.service;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,7 @@ public class AuthService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public AuthResponse signup(SignupRequest request) {
+  public User signup(SignupRequest request) {
     User user = User.builder()
         .firstname(request.getFirstname())
         .lastname(request.getLastname())
@@ -30,12 +32,7 @@ public class AuthService {
         .password(passwordEncoder.encode(request.getPassword()))
         .role_id(request.getRole_id())
         .build();
-    repository.save(user);
-
-    String accessToken = jwtService.generateToken(user);
-    return AuthResponse.builder()
-        .accessToken(accessToken)
-        .build();
+    return repository.save(user);
   }
 
   public AuthResponse login(AuthRequest request) {
@@ -50,4 +47,16 @@ public class AuthService {
         .accessToken(accessToken)
         .build();
   }
+
+  public Long getLoggedUserId() {
+    try {
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      User loggedUser = (User) authentication.getPrincipal();
+      return loggedUser.getId();
+    } catch (Exception e) {
+      return null;
+    }
+
+  }
+
 }

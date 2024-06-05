@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,15 +17,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.tpo.ecommerce.entity.User;
 import com.uade.tpo.ecommerce.entity.dto.UserRequest;
+import com.uade.tpo.ecommerce.entity.dto.UserResponse;
 import com.uade.tpo.ecommerce.exceptions.UserNotFoundException;
 import com.uade.tpo.ecommerce.service.UserService;
 
 @RestController
+@CrossOrigin
 @RequestMapping("admin/users")
 public class AdminUserController {
 
   @Autowired
   private UserService service;
+
+  @GetMapping("logged-user-info")
+  public ResponseEntity<UserResponse> getLoggedUser() {
+    User user = service.getLoggedUser();
+    if (user != null)
+      return ResponseEntity.ok(UserService.userResponseBuilder(user));
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+  }
 
   @GetMapping
   public ResponseEntity<List<User>> getAll() {
