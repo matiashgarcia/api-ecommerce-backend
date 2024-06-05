@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.uade.tpo.ecommerce.entity.User;
 import com.uade.tpo.ecommerce.entity.dto.UserRequest;
+import com.uade.tpo.ecommerce.entity.dto.UserResponse;
 import com.uade.tpo.ecommerce.exceptions.UserDuplicateException;
 import com.uade.tpo.ecommerce.exceptions.UserNotFoundException;
 import com.uade.tpo.ecommerce.repository.UserRepository;
@@ -18,6 +21,8 @@ public class UserService implements IUserService {
 
   @Autowired
   private UserRepository repository;
+  @Autowired
+  private AuthService authService;
 
   public List<User> getAll() {
     return repository.findAll();
@@ -44,6 +49,26 @@ public class UserService implements IUserService {
     if (user.isPresent())
       return repository.save(new User(request));
     throw new UserNotFoundException();
+  }
+
+  public User getLoggedUser() {
+    Long userId = authService.getLoggedUserId();
+    if (userId != null) {
+      Optional<User> user = repository.findById(userId);
+      return user.get();
+    }
+    return null;
+  }
+
+  public static UserResponse userResponseBuilder(User a) {
+    return UserResponse.builder()
+        .id(a.getId())
+        .firstname(a.getFirstname())
+        .lastname(a.getLastname())
+        .email(a.getEmail())
+        .avatar_img(a.getAvatar_img())
+        .role(a.getRole())
+        .build();
   }
 
 }
