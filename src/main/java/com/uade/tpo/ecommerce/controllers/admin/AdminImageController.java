@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
+@CrossOrigin
 @RequestMapping("admin/image")
 public class AdminImageController {
   @Autowired
@@ -38,7 +39,6 @@ public class AdminImageController {
     return ResponseEntity.ok().body(imgResponse);
   }
 
-  @CrossOrigin
   @GetMapping("/{id}")
   public ResponseEntity<ImageResponse> getImageById(@PathVariable Long id) throws IOException, SQLException {
     Image image = imageService.getImageById(id);
