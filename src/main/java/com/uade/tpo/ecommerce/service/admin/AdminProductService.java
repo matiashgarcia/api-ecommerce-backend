@@ -60,6 +60,7 @@ public class AdminProductService implements IAdminProductService {
     return ProductResponse.builder()
         .id(p.getId())
         .title(p.getTitle())
+        .description(p.getDescription())
         .price(p.getPrice())
         .discount(p.getDiscount())
         .stock(p.getStock())
