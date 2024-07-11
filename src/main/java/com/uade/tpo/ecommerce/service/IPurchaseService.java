@@ -6,6 +6,6 @@ import com.uade.tpo.ecommerce.entity.dto.CartProduct;
 
 public interface IPurchaseService {
 
-    void processPurchase(List<CartProduct> cartProducts) throws Exception;
+    public void processPurchase(List<CartProduct> cartProducts) throws Exception;
 
 }

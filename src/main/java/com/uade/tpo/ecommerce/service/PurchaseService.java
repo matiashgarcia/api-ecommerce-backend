@@ -3,6 +3,7 @@ package com.uade.tpo.ecommerce.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.uade.tpo.ecommerce.entity.Product;
 import com.uade.tpo.ecommerce.entity.dto.CartProduct;
@@ -10,6 +11,7 @@ import com.uade.tpo.ecommerce.repository.ProductRepository;
 
 import jakarta.transaction.Transactional;
 
+@Service
 public class PurchaseService implements IPurchaseService {
 
     @Autowired
