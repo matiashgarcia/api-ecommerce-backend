@@ -50,7 +50,7 @@ public class Product {
   private Float discount;
 
   @Column
-  private String stock;
+  private Integer stock;
 
   @Column
   private String image_url;
