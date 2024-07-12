@@ -12,6 +12,7 @@ import com.uade.tpo.ecommerce.entity.Purchase;
 import com.uade.tpo.ecommerce.entity.PurchaseItem;
 import com.uade.tpo.ecommerce.entity.User;
 import com.uade.tpo.ecommerce.entity.dto.CartProduct;
+import com.uade.tpo.ecommerce.exceptions.PurchaseException;
 import com.uade.tpo.ecommerce.repository.ProductRepository;
 import com.uade.tpo.ecommerce.repository.PurchaseRepository;
 import com.uade.tpo.ecommerce.repository.UserRepository;
@@ -37,7 +38,7 @@ public class PurchaseService implements IPurchaseService {
     public void processPurchase(List<CartProduct> cartProducts) throws Exception {
         Long userId = authService.getLoggedUserId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new Exception("User not found: " + userId));
+                .orElseThrow(() -> new PurchaseException("User not found: " + userId));
 
         Purchase purchase = new Purchase();
         purchase.setUser(user);
@@ -48,11 +49,11 @@ public class PurchaseService implements IPurchaseService {
 
         for (CartProduct item : cartProducts) {
             Product product = productRepository.findById(item.getId())
-                    .orElseThrow(() -> new Exception("Product not found: " + item.getId()));
+                    .orElseThrow(() -> new PurchaseException("Product not found: " + item.getId()));
 
             int newStock = product.getStock() - item.getQuantity();
             if (newStock < 0) {
-                throw new Exception("Stock exceeded for product: " + product.getTitle());
+                throw new PurchaseException("Stock exceeded for product: " + product.getTitle());
             }
 
             // Calculate the effective price after discount
