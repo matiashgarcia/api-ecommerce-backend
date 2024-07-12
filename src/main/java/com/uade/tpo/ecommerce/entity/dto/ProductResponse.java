@@ -11,7 +11,7 @@ public class ProductResponse {
   private String description;
   private Double price;
   private Float discount;
-  private String stock;
+  private Integer stock;
   private String image_url;
   private Long category_id;
   private Long user_id;
