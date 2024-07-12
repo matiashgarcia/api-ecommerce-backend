@@ -82,8 +82,7 @@ public class PurchaseService implements IPurchaseService {
         purchaseRepository.save(purchase);
     }
 
-    public List<PurchaseHistoryResponse> getPurchaseHistory() throws Exception {
-        Long userId = authService.getLoggedUserId();
+    public List<PurchaseHistoryResponse> getPurchaseHistory(Long userId) throws Exception {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found: " + userId));
 

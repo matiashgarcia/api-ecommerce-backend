@@ -9,6 +9,6 @@ public interface IPurchaseService {
 
     public void processPurchase(List<CartProduct> cartProducts) throws Exception;
 
-    public List<PurchaseHistoryResponse> getPurchaseHistory() throws Exception;
+    public List<PurchaseHistoryResponse> getPurchaseHistory(Long userId) throws Exception;
 
 }
